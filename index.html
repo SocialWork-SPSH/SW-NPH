@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบงานสังคมสงเคราะห์ รพ.นครปฐม</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #0b5e47;
+    --green: #0f7a5c;
+    --green-light: #e8f5ef;
+    --text: #1f2d27;
+    --bg: #f4f6f5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    background: linear-gradient(90deg, var(--green-dark), var(--green));
+    color: #fff;
+    padding: 10px 20px 0;
+    flex-shrink: 0;
+  }
+  .brand { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .brand h1 { font-size: 18px; font-weight: 700; }
+  .brand p  { font-size: 13px; opacity: .85; }
+  .open-new {
+    color: #fff; text-decoration: none; font-size: 13px;
+    border: 1px solid rgba(255,255,255,.5); border-radius: 6px; padding: 4px 10px;
+    white-space: nowrap;
+  }
+  .open-new:hover { background: rgba(255,255,255,.15); }
+
+  /* ---------- Tabs ---------- */
+  nav { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; }
+  nav button {
+    font-family: inherit; font-size: 15px; font-weight: 600;
+    border: none; cursor: pointer;
+    padding: 10px 18px;
+    border-radius: 10px 10px 0 0;
+    background: rgba(255,255,255,.15);
+    color: #fff;
+    white-space: nowrap;
+  }
+  nav button:hover { background: rgba(255,255,255,.25); }
+  nav button.active { background: var(--bg); color: var(--green-dark); }
+
+  /* ---------- Frames ---------- */
+  main { flex: 1; position: relative; }
+  .pane { position: absolute; inset: 0; display: none; }
+  .pane.active { display: block; }
+  .pane iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .loading {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: #567; pointer-events: none;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 8px 12px 0; }
+    .brand h1 { font-size: 16px; }
+    nav button { font-size: 14px; padding: 8px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div>
+      <h1>ระบบงานสังคมสงเคราะห์</h1>
+      <p>กลุ่มงานสังคมสงเคราะห์ โรงพยาบาลนครปฐม</p>
+    </div>
+    <a id="openNew" class="open-new" href="#" target="_blank" rel="noopener">↗ เปิดในแท็บใหม่</a>
+  </div>
+  <nav>
+    <button data-tab="service">① บันทึกการให้บริการสังคมสงเคราะห์</button>
+    <button data-tab="welfare">② บันทึกผู้ใช้บริการสงเคราะห์ (อนุเคราะห์/ค้างชำระ)</button>
+  </nav>
+</header>
+
+<main>
+  <div class="pane" id="pane-service">
+    <div class="loading">กำลังโหลดระบบ…</div>
+    <iframe data-src="https://script.google.com/macros/s/AKfycbyCPHzub-5ycPE9iZi4FWZfHtEyP7diT5YytCBLOGJhHNfr7gYoqa0Uc7dQWeG302_Kkg/exec"
+            title="ระบบบันทึกการให้บริการสังคมสงเคราะห์"
+            allow="clipboard-write; fullscreen"></iframe>
+  </div>
+  <div class="pane" id="pane-welfare">
+    <div class="loading">กำลังโหลดระบบ…</div>
+    <iframe data-src="https://script.google.com/macros/s/AKfycbwdN3J-0G8lAxPAnIChGQ5O6LfncJNXw4UdqYgpnef9HC4M33s2a11uCCTI25hQVVuANQ/exec"
+            title="ระบบบันทึกผู้ใช้บริการสงเคราะห์"
+            allow="clipboard-write; fullscreen"></iframe>
+  </div>
+</main>
+
+<script>
+  // แต่ละระบบโหลดครั้งแรกเมื่อเปิดแท็บ แล้วคงอยู่ตลอด (สลับแท็บแล้วข้อมูลที่กรอกไม่หาย)
+  const buttons = document.querySelectorAll('nav button');
+  const openNew = document.getElementById('openNew');
+
+  function show(tab) {
+    if (!document.getElementById('pane-' + tab)) tab = 'service';
+    buttons.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+
+    const pane = document.getElementById('pane-' + tab);
+    const frame = pane.querySelector('iframe');
+    if (!frame.src) {
+      frame.addEventListener('load', () => pane.querySelector('.loading').remove(), { once: true });
+      frame.src = frame.dataset.src;
+    }
+    pane.classList.add('active');
+    openNew.href = frame.dataset.src;
+    history.replaceState(null, '', '#' + tab);
+  }
+
+  buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.tab)));
+
+  // ลิงก์ตรงเข้าแต่ละระบบได้ เช่น .../#welfare
+  show(location.hash.replace('#', '') || 'service');
+</script>
+</body>
+</html>
