@@ -7,54 +7,82 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green-dark: #0b5e47;
+    --green-dark: #0a4f3c;
     --green: #0f7a5c;
-    --green-light: #e8f5ef;
-    --text: #1f2d27;
-    --bg: #f4f6f5;
+    --bar-h: 40px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
+  html, body { height: 100%; overflow: hidden; }
   body {
     font-family: 'Sarabun', sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    background: #f4f6f5;
     display: flex;
     flex-direction: column;
   }
 
-  /* ---------- Header ---------- */
-  header {
-    background: linear-gradient(90deg, var(--green-dark), var(--green));
-    color: #fff;
-    padding: 10px 20px 0;
+  /* ---------- แถบบนแบบบาง แถวเดียว ---------- */
+  .bar {
+    height: var(--bar-h);
     flex-shrink: 0;
-  }
-  .brand { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .brand h1 { font-size: 18px; font-weight: 700; }
-  .brand p  { font-size: 13px; opacity: .85; }
-  .open-new {
-    color: #fff; text-decoration: none; font-size: 13px;
-    border: 1px solid rgba(255,255,255,.5); border-radius: 6px; padding: 4px 10px;
-    white-space: nowrap;
-  }
-  .open-new:hover { background: rgba(255,255,255,.15); }
-
-  /* ---------- Tabs ---------- */
-  nav { display: flex; gap: 6px; margin-top: 10px; overflow-x: auto; }
-  nav button {
-    font-family: inherit; font-size: 15px; font-weight: 600;
-    border: none; cursor: pointer;
-    padding: 10px 18px;
-    border-radius: 10px 10px 0 0;
-    background: rgba(255,255,255,.15);
+    background: var(--green-dark);
     color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    transition: margin-top .2s ease;
+  }
+  body.collapsed .bar { margin-top: calc(var(--bar-h) * -1); }
+
+  .brand { font-size: 13px; opacity: .8; white-space: nowrap; }
+
+  .tabs {
+    display: flex;
+    background: rgba(255,255,255,.12);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 3px;
+    margin: 0 auto;
+  }
+  .tabs button {
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    border: 0; border-radius: 6px; cursor: pointer;
+    padding: 4px 14px;
+    background: transparent; color: #fff;
     white-space: nowrap;
   }
-  nav button:hover { background: rgba(255,255,255,.25); }
-  nav button.active { background: var(--bg); color: var(--green-dark); }
+  .tabs button:hover { background: rgba(255,255,255,.15); }
+  .tabs button.active { background: #fff; color: var(--green-dark); }
 
-  /* ---------- Frames ---------- */
+  .icon-btn {
+    width: 28px; height: 28px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 0; border-radius: 6px; cursor: pointer;
+    background: transparent; color: #fff; text-decoration: none;
+    font-size: 15px;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,.15); }
+  .actions { display: flex; gap: 2px; }
+
+  /* ---------- ปุ่มลอยตอนซ่อนแถบ ---------- */
+  .float {
+    position: fixed; left: 10px; bottom: 10px; z-index: 10;
+    display: none; align-items: center; gap: 2px;
+    background: var(--green-dark); color: #fff;
+    border-radius: 999px; padding: 3px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    opacity: .55; transition: opacity .15s;
+  }
+  .float:hover { opacity: 1; }
+  body.collapsed .float { display: flex; }
+  .float button {
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    border: 0; border-radius: 999px; cursor: pointer;
+    padding: 4px 10px; background: transparent; color: #fff;
+  }
+  .float button.active { background: #fff; color: var(--green-dark); }
+
+  /* ---------- พื้นที่ระบบ ---------- */
   main { flex: 1; position: relative; }
   .pane { position: absolute; inset: 0; display: none; }
   .pane.active { display: block; }
@@ -64,28 +92,32 @@
     font-size: 15px; color: #567; pointer-events: none;
   }
 
-  @media (max-width: 600px) {
-    header { padding: 8px 12px 0; }
-    .brand h1 { font-size: 16px; }
-    nav button { font-size: 14px; padding: 8px 12px; }
+  @media (max-width: 760px) {
+    .brand { display: none; }
+    .tabs { margin: 0; flex: 1; }
+    .tabs button { flex: 1; padding: 4px 6px; font-size: 13px; }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="brand">
-    <div>
-      <h1>ระบบงานสังคมสงเคราะห์</h1>
-      <p>กลุ่มงานสังคมสงเคราะห์ โรงพยาบาลนครปฐม</p>
-    </div>
-    <a id="openNew" class="open-new" href="#" target="_blank" rel="noopener">↗ เปิดในแท็บใหม่</a>
+<div class="bar">
+  <span class="brand">งานสังคมสงเคราะห์ รพ.นครปฐม</span>
+  <div class="tabs">
+    <button data-tab="service">บันทึกการให้บริการ</button>
+    <button data-tab="welfare">อนุเคราะห์ / ค้างชำระ</button>
   </div>
-  <nav>
-    <button data-tab="service">① บันทึกการให้บริการสังคมสงเคราะห์</button>
-    <button data-tab="welfare">② บันทึกผู้ใช้บริการสงเคราะห์ (อนุเคราะห์/ค้างชำระ)</button>
-  </nav>
-</header>
+  <div class="actions">
+    <a id="openNew" class="icon-btn" href="#" target="_blank" rel="noopener" title="เปิดระบบนี้ในแท็บใหม่">↗</a>
+    <button id="collapse" class="icon-btn" title="ซ่อนแถบด้านบน">⌃</button>
+  </div>
+</div>
+
+<div class="float" title="สลับระบบ">
+  <button data-tab="service">① ให้บริการ</button>
+  <button data-tab="welfare">② อนุเคราะห์</button>
+  <button id="expand" title="แสดงแถบด้านบน">⌄</button>
+</div>
 
 <main>
   <div class="pane" id="pane-service">
@@ -103,29 +135,35 @@
 </main>
 
 <script>
-  // แต่ละระบบโหลดครั้งแรกเมื่อเปิดแท็บ แล้วคงอยู่ตลอด (สลับแท็บแล้วข้อมูลที่กรอกไม่หาย)
-  const buttons = document.querySelectorAll('nav button');
+  const tabButtons = document.querySelectorAll('[data-tab]');
   const openNew = document.getElementById('openNew');
 
   function show(tab) {
     if (!document.getElementById('pane-' + tab)) tab = 'service';
-    buttons.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+    tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
 
     const pane = document.getElementById('pane-' + tab);
     const frame = pane.querySelector('iframe');
     if (!frame.src) {
-      frame.addEventListener('load', () => pane.querySelector('.loading').remove(), { once: true });
+      frame.addEventListener('load', () => pane.querySelector('.loading')?.remove(), { once: true });
       frame.src = frame.dataset.src;
     }
     pane.classList.add('active');
     openNew.href = frame.dataset.src;
     history.replaceState(null, '', '#' + tab);
   }
+  tabButtons.forEach(b => b.addEventListener('click', () => show(b.dataset.tab)));
 
-  buttons.forEach(b => b.addEventListener('click', () => show(b.dataset.tab)));
+  // ซ่อน/แสดงแถบด้านบน (จำค่าไว้ในเครื่อง)
+  function setCollapsed(on) {
+    document.body.classList.toggle('collapsed', on);
+    try { localStorage.setItem('swBarCollapsed', on ? '1' : '0'); } catch (e) {}
+  }
+  document.getElementById('collapse').addEventListener('click', () => setCollapsed(true));
+  document.getElementById('expand').addEventListener('click', () => setCollapsed(false));
+  try { if (localStorage.getItem('swBarCollapsed') === '1') setCollapsed(true); } catch (e) {}
 
-  // ลิงก์ตรงเข้าแต่ละระบบได้ เช่น .../#welfare
   show(location.hash.replace('#', '') || 'service');
 </script>
 </body>
