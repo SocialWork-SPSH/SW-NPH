@@ -7,8 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --green-dark: #0a4f3c;
-    --green: #0f7a5c;
+    --c-service: #0b5e47;   /* สีหัวระบบ 1 */
+    --c-welfare: #0f766e;   /* สีหัวระบบ 2 (teal) */
+    --ink: #1f2d27;
+    --muted: #5b6b64;
+    --line: #dfe5e2;
+    --chip: #eef2f0;
     --bar-h: 40px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,8 +28,9 @@
   .bar {
     height: var(--bar-h);
     flex-shrink: 0;
-    background: var(--green-dark);
-    color: #fff;
+    background: #fff;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -34,11 +39,11 @@
   }
   body.collapsed .bar { margin-top: calc(var(--bar-h) * -1); }
 
-  .brand { font-size: 13px; opacity: .8; white-space: nowrap; }
+  .brand { font-size: 13px; color: var(--muted); font-weight: 600; white-space: nowrap; }
 
   .tabs {
     display: flex;
-    background: rgba(255,255,255,.12);
+    background: var(--chip);
     border-radius: 8px;
     padding: 3px;
     gap: 3px;
@@ -48,29 +53,32 @@
     font-family: inherit; font-size: 14px; font-weight: 600;
     border: 0; border-radius: 6px; cursor: pointer;
     padding: 4px 14px;
-    background: transparent; color: #fff;
+    background: transparent; color: var(--muted);
     white-space: nowrap;
+    transition: background .15s, color .15s;
   }
-  .tabs button:hover { background: rgba(255,255,255,.15); }
-  .tabs button.active { background: #fff; color: var(--green-dark); }
+  .tabs button:hover { background: #e2e8e5; color: var(--ink); }
+  [data-tab="service"].active { background: var(--c-service); color: #fff; }
+  [data-tab="welfare"].active { background: var(--c-welfare); color: #fff; }
 
   .icon-btn {
     width: 28px; height: 28px; flex-shrink: 0;
     display: inline-flex; align-items: center; justify-content: center;
     border: 0; border-radius: 6px; cursor: pointer;
-    background: transparent; color: #fff; text-decoration: none;
+    background: transparent; color: var(--muted); text-decoration: none;
     font-size: 15px;
   }
-  .icon-btn:hover { background: rgba(255,255,255,.15); }
+  .icon-btn:hover { background: var(--chip); color: var(--ink); }
   .actions { display: flex; gap: 2px; }
 
   /* ---------- ปุ่มลอยตอนซ่อนแถบ ---------- */
   .float {
     position: fixed; left: 10px; bottom: 10px; z-index: 10;
     display: none; align-items: center; gap: 2px;
-    background: var(--green-dark); color: #fff;
+    background: #fff; color: var(--muted);
+    border: 1px solid var(--line);
     border-radius: 999px; padding: 3px;
-    box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    box-shadow: 0 2px 10px rgba(0,0,0,.18);
     opacity: .55; transition: opacity .15s;
   }
   .float:hover { opacity: 1; }
@@ -78,9 +86,8 @@
   .float button {
     font-family: inherit; font-size: 13px; font-weight: 600;
     border: 0; border-radius: 999px; cursor: pointer;
-    padding: 4px 10px; background: transparent; color: #fff;
+    padding: 4px 10px; background: transparent; color: var(--muted);
   }
-  .float button.active { background: #fff; color: var(--green-dark); }
 
   /* ---------- พื้นที่ระบบ ---------- */
   main { flex: 1; position: relative; }
