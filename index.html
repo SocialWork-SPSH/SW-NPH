@@ -138,21 +138,55 @@
   const tabButtons = document.querySelectorAll('[data-tab]');
   const openNew = document.getElementById('openNew');
 
+  let currentTab = 'service';
+
+  // เติม embed=1 ให้ระบบรู้ว่ากำลังถูกฝังอยู่ในหน้ารวม
+  function embedUrl(href) {
+    const u = new URL(href);
+    u.searchParams.set('embed', '1');
+    return u.toString();
+  }
+  // ลิงก์ "เปิดในแท็บใหม่" = หน้าปัจจุบันของระบบ แต่ไม่มี embed
+  function plainUrl(href) {
+    const u = new URL(href);
+    u.searchParams.delete('embed');
+    return u.toString();
+  }
+
   function show(tab) {
     if (!document.getElementById('pane-' + tab)) tab = 'service';
+    currentTab = tab;
     tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
     document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
 
     const pane = document.getElementById('pane-' + tab);
     const frame = pane.querySelector('iframe');
-    if (!frame.src) {
+    if (!frame.getAttribute('src')) {
       frame.addEventListener('load', () => pane.querySelector('.loading')?.remove(), { once: true });
-      frame.src = frame.dataset.src;
+      frame.dataset.current = frame.dataset.src;
+      frame.src = embedUrl(frame.dataset.src);
     }
     pane.classList.add('active');
-    openNew.href = frame.dataset.src;
+    openNew.href = plainUrl(frame.dataset.current);
     history.replaceState(null, '', '#' + tab);
   }
+
+  // รับคำสั่งเปลี่ยนหน้าจากระบบที่ฝังอยู่ (ค้นหา / ติดตามชำระเงิน / Dashboard / กลับหน้าบันทึก)
+  window.addEventListener('message', (e) => {
+    if (!/\.googleusercontent\.com$|^https:\/\/script\.google\.com$/.test(e.origin)) return;
+    const d = e.data;
+    if (!d || d.type !== 'sw-nav' || typeof d.href !== 'string') return;
+
+    for (const frame of document.querySelectorAll('.pane iframe')) {
+      const base = frame.dataset.src.split('?')[0];
+      if (d.href.startsWith(base)) {
+        frame.dataset.current = d.href;
+        frame.src = embedUrl(d.href);
+        if (frame.closest('.pane').classList.contains('active')) openNew.href = plainUrl(d.href);
+        return;
+      }
+    }
+  });
   tabButtons.forEach(b => b.addEventListener('click', () => show(b.dataset.tab)));
 
   // ซ่อน/แสดงแถบด้านบน (จำค่าไว้ในเครื่อง)
