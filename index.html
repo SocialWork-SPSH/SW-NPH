@@ -9,6 +9,7 @@
   :root {
     --c-service: #0b5e47;   /* สีหัวระบบ 1 */
     --c-welfare: #0f766e;   /* สีหัวระบบ 2 (teal) */
+    --c-shelter: #1e2a4a;   /* สีเมนูระบบ 3 (น้ำเงินเข้ม) */
     --ink: #1f2d27;
     --muted: #5b6b64;
     --line: #dfe5e2;
@@ -60,6 +61,7 @@
   .tabs button:hover { background: #e2e8e5; color: var(--ink); }
   [data-tab="service"].active { background: var(--c-service); color: #fff; }
   [data-tab="welfare"].active { background: var(--c-welfare); color: #fff; }
+  [data-tab="shelter"].active { background: var(--c-shelter); color: #fff; }
 
   .icon-btn {
     width: 28px; height: 28px; flex-shrink: 0;
@@ -101,7 +103,8 @@
 
   @media (max-width: 760px) {
     .brand { display: none; }
-    .tabs { margin: 0; flex: 1; }
+    .tabs { margin: 0; flex: 1; overflow-x: auto; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
     .tabs button { flex: 1; padding: 4px 6px; font-size: 13px; }
   }
 </style>
@@ -113,6 +116,7 @@
   <div class="tabs">
     <button data-tab="service">บันทึกการให้บริการ</button>
     <button data-tab="welfare">อนุเคราะห์ / ค้างชำระ</button>
+    <button data-tab="shelter">รอเข้าสถานสงเคราะห์</button>
   </div>
   <div class="actions">
     <a id="openNew" class="icon-btn" href="#" target="_blank" rel="noopener" title="เปิดระบบนี้ในแท็บใหม่">↗</a>
@@ -123,6 +127,7 @@
 <div class="float" title="สลับระบบ">
   <button data-tab="service">① ให้บริการ</button>
   <button data-tab="welfare">② อนุเคราะห์</button>
+  <button data-tab="shelter">③ รอเข้าสถาน</button>
   <button id="expand" title="แสดงแถบด้านบน">⌄</button>
 </div>
 
@@ -137,6 +142,12 @@
     <div class="loading">กำลังโหลดระบบ…</div>
     <iframe data-src="https://script.google.com/macros/s/AKfycbwdN3J-0G8lAxPAnIChGQ5O6LfncJNXw4UdqYgpnef9HC4M33s2a11uCCTI25hQVVuANQ/exec"
             title="ระบบบันทึกผู้ใช้บริการสงเคราะห์"
+            allow="clipboard-write; fullscreen"></iframe>
+  </div>
+  <div class="pane" id="pane-shelter">
+    <div class="loading">กำลังโหลดระบบ…</div>
+    <iframe data-src="https://script.google.com/macros/s/AKfycbwlGd4dnxs_-NytDhZkwpNuaFO0T5HtAEh8e0k2HvoaCYcWwSxfkiIz21HBefiM8-xQ/exec"
+            title="รายชื่อผู้ป่วยรอเข้าสถานสงเคราะห์"
             allow="clipboard-write; fullscreen"></iframe>
   </div>
 </main>
